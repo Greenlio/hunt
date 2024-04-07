@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Perk Optimizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    .input-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    
+    .perks {
+      margin-top: 30px;
+    }
+    
+    .perk {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 3px;
+    }
+    
+    .perk h3 {
+      margin-top: 0;
+    }
+    
+    .perk p {
+      margin-bottom: 0;
+    }
+    
+    .game-sucks-without-it {
+      background-color: #e6f2ff;
+    }
+    
+    .high-priority {
+      background-color: #e6f2f2;
+    }
+    
+    .weapon-specific-important {
+      background-color: #f2f2e6;
+    }
+    
+    .medium-priority {
+      background-color: #f2f0e6;
+    }
+    
+    .weapon-specific-unimportant {
+      background-color: #f2eae6;
+    }
+    
+    .low-priority {
+      background-color: #f2e6f0;
+    }
+    
+    .not-the-best {
+      background-color: #f0e6f2;
+    }
+    
+    .nooby {
+      background-color: #e6e6f2;
+    }
+    
+    .gamer-clips {
+      background-color: #e6f2e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Perk Optimizer</h1>
+    <div class="input-group">
+      <label for="perk-points">Enter your perk points:</label>
+      <input type="number" id="perk-points" min="0" step="1">
+    </div>
+    <button onclick="optimizePerks()">Optimize Perks</button>
+    <div class="perks" id="perks-container"></div>
+  </div>
+
+  <script>
+    const perks = {
+      "Kiteskin": 1,
+      "Assailant": 1,
+      "Doctor": 9,
+      "Physician": 5,
+      "Necromancer": 4,
+      "Vigor": 3,
+      "Decoy Supply": 1,
+      "Whispersmith": 1,
+      "Bolt Thrower": 3,
+      "Levering": 4,
+      "Iron Eye": 3,
+      "Scopesmith": 2,
+      "Hundred Hands": 2,
+      "Quartermaster": 6,
+      "Frontiersman": 7,
+      "Resilience": 3,
+      "Packmule": 4,
+      "Vulture": 3,
+      "Lightfoot": 5,
+      "Conduit": 5,
+      "Fanning": 8,
+      "Silent Killer": 4,
+      "Ambidextrous": 3,
+      "Steady Aim": 2,
+      "Serpent": 4,
+      "Blade Seer": 1,
+      "Determination": 4,
+      "Adrenaline": 1,
+      "Beastface": 4,
+      "Magpie": 1,
+      "Pitcher": 6,
+      "Bulletgrubber": 4,
+      "Gator Legs": 3,
+      "Ghoul": 3,
+      "Dauntless": 1,
+      "Poison Sense": 1,
+      "Bulwark": 2,
+      "Bloodless": 3,
+      "Salveskin": 3,
+      "Mithridatist": 3,
+      "Hornskin": 3,
+      "Vigilant": 1,
+      "Poacher": 1,
+      "Greyhound": 5
+    };
+
+    function optimizePerks() {
+      const perkPoints = parseInt(document.getElementById("perk-points").value);
+      const perksContainer = document.getElementById("perks-container");
+      perksContainer.innerHTML = "";
+
+      const sortedPerks = Object.keys(perks).sort((a, b) => {
+        const priorityA = getPriority(a);
+        const priorityB = getPriority(b);
+        return priorityA - priorityB;
+      });
+
+      let remainingPoints = perkPoints;
+      for (const perkName of sortedPerks) {
+        const perkCost = perks[perkName];
+        if (perkCost <= remainingPoints) {
+          const perkElement = document.createElement("div");
+          perkElement.classList.add("perk", getPriorityClass(perkName));
+          perkElement.innerHTML = `
+            <h3>${perkName}</h3>
+            <p>${perkCost} perk points</p>
+          `;
+          perksContainer.appendChild(perkElement);
+          remainingPoints -= perkCost;
+        }
+      }
+
+      if (remainingPoints > 0) {
+        const remainingElement = document.createElement("div");
+        remainingElement.classList.add("perk", "low-priority");
+        remainingElement.innerHTML = `
+          <h3>Remaining Perk Points: ${remainingPoints}</h3>
+          <p>You have some perk points left over. Consider investing in lower priority perks or saving them for future upgrades.</p>
+        `;
+        perksContainer.appendChild(remainingElement);
+      }
+    }
+
+    function getPriority(perkName) {
+      const priorityMap = {
+        "Kiteskin": 1,
+        "Assailant": 2,
+        "Doctor": 2,
+        "Physician": 2,
+        "Necromancer": 2,
+        "Vigor": 2,
+        "Decoy Supply": 2,
+        "Whispersmith": 3,
+        "Bolt Thrower": 3,
+        "Levering": 3,
+        "Iron Eye": 3,
+        "Scopesmith": 3,
+        "Hundred Hands": 3,
+        "Quartermaster": 4,
+        "Frontiersman": 4,
+        "Resilience": 4,
+        "Packmule": 4,
+        "Vulture": 4,
+        "Lightfoot": 4,
+        "Conduit": 4,
+        "Fanning": 5,
+        "Silent Killer": 5,
+        "Ambidextrous": 5,
+        "Steady Aim": 5,
+        "Serpent": 6,
+        "Blade Seer": 6,
+        "Determination": 7,
+        "Adrenaline": 7,
+        "Beastface": 7,
+        "Magpie": 7,
+        "Pitcher": 7,
+        "Bulletgrubber": 8,
+        "Gator Legs": 8,
+        "Ghoul": 8,
+        "Dauntless": 9,
+        "Poison Sense": 9,
+        "Bulwark": 9,
+        "Bloodless": 9,
+        "Salveskin": 9,
+        "Mithridatist": 9,
+        "Hornskin": 9,
+        "Vigilant": 9,
+        "Poacher": 9,
+        "Greyhound": 9
+      };
+      return priorityMap[perkName] || 0;
+    }
+
+    function getPriorityClass(perkName) {
+      const priorityMap = {
+        "Kiteskin": "game-sucks-without-it",
+        "Assailant": "high-priority",
+        "Doctor": "high-priority",
+        "Physician": "high-priority",
+        "Necromancer": "high-priority",
+        "Vigor": "high-priority",
+        "Decoy Supply": "high-priority",
+        "Whispersmith": "weapon-specific-important",
+        "Bolt Thrower": "weapon-specific-important",
+        "Levering": "weapon-specific-important",
+        "Iron Eye": "weapon-specific-important",
+        "Scopesmith": "weapon-specific-important",
+        "Hundred Hands": "weapon-specific-important",
+        "Quartermaster": "medium-priority",
+        "Frontiersman": "medium-priority",
+        "Resilience": "medium-priority",
+        "Packmule": "medium-priority",
+        "Vulture": "medium-priority",
+        "Lightfoot": "medium-priority",
+        "Conduit": "medium-priority",
+        "Fanning": "weapon-specific-unimportant",
+        "Silent Killer": "weapon-specific-unimportant",
+        "Ambidextrous": "weapon-specific-unimportant",
+        "Steady Aim": "weapon-specific-unimportant",
+        "Serpent": "low-priority",
+        "Blade Seer": "low-priority",
+        "Determination": "not-the-best",
+        "Adrenaline": "not-the-best",
+        "Beastface": "not-the-best",
+        "Magpie": "not-the-best",
+        "Pitcher": "not-the-best",
+        "Bulletgrubber": "nooby",
+        "Gator Legs": "nooby",
+        "Ghoul": "nooby",
+        "Dauntless": "gamer-clips",
+        "Poison Sense": "gamer-clips",
+        "Bulwark": "counters",
+        "Bloodless": "counters",
+        "Salveskin": "counters",
+        "Mithridatist": "counters",
+        "Hornskin": "counters",
+        "Vigilant": "counters",
+        "Poacher": "counters",
+        "Greyhound": "counters"
+      };
+      return priorityMap[perkName] || "";
+    }
+  </script>
+</body>
+</html>
